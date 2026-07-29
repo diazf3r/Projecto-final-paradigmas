@@ -1,0 +1,49 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+<div class="container my-4">
+
+    <section class="dashboard-section">
+        <h2 class="section-title">Trámites y Servicios</h2>
+
+        <div class="cards-grid">
+
+            <a asp-controller="ReservaCoworking" asp-action="Index" class="dipp-card">
+                <div class="card-icon icon-teal">
+                    <i class="bi bi-laptop"></i> 
+                </div>
+                <h3 class="card-title">Reserva Coworking</h3>
+                <p class="card-description">Reserva tu espacio de estudio en el área de coworking de la biblioteca.</p>
+            </a>
+
+            <a asp-controller="Solicitudes" asp-action="Index" class="dipp-card">
+                <div class="card-icon icon-purple">
+                    <i class="bi bi-file-earmark-text"></i>
+                </div>
+                <h3 class="card-title">Solicitudes</h3>
+                <p class="card-description">Cambio de centro, carrera, activación de pago</p>
+            </a>
+
+            <a asp-controller="Horas" asp-action="Index" class="dipp-card">
+                <div class="card-icon icon-orange">
+                    <i class="bi bi-clock-history"></i>
+                </div>
+                <h3 class="card-title">Horas Artículo 140</h3>
+                <p class="card-description">Gestiona tus horas del Art. 140</p>
+            </a>
+
+            <a asp-controller="EstadoCuenta" asp-action="Index" class="dipp-card">
+                <div class="card-icon icon-purple">
+                    <i class="bi bi-card-checklist"></i>
+                </div>
+                <h3 class="card-title">Estado de cuenta</h3>
+                <p class="card-description">Revisa y gestiona tu estado de cuenta</p>
+            </a>
+
+        </div>
+    </section>
+
+</div>

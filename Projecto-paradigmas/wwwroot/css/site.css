@@ -1,0 +1,166 @@
+:root {
+    --unah-blue-dark: #002b66;
+    --unah-blue: #004085;
+    --unah-accent-purple: #6f42c1;
+    --bg-gray: #f8f9fa;
+    --card-border: #e9ecef;
+    --text-muted: #6c757d;
+}
+
+
+.dashboard-section {
+    margin-bottom: 2rem;
+}
+
+.section-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+
+.section-title::before {
+    content: "";
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    background-color: var(--unah-accent-purple);
+    border-radius: 2px;
+}
+
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1.25rem;
+}
+
+.dipp-card {
+    background: #ffffff;
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.2s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.dipp-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.08);
+    text-decoration: none;
+    color: inherit;
+}
+
+
+.card-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+}
+
++
+.icon-purple {
+    background-color: #6f42c1;
+}
+
+.icon-orange {
+    background-color: #fd7e14;
+}
+
+.icon-teal {
+    background-color: #20c997;
+}
+
+.icon-blue {
+    background-color: #0d6efd;
+}
+
+.card-title {
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    color: #212529;
+}
+
+.card-description {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.3;
+    margin: 0;
+}
+
+/* Color Azul Institucional UNAH */
+:root {
+    --unah-navy: #003366;
+    --unah-navy-dark: #002244;
+}
+
+/* Header Adjustments */
+.unah-logo-badge {
+    background-color: var(--unah-navy);
+    padding: 6px 10px;
+    border-radius: 6px;
+}
+
+.user-name-text {
+    font-size: 0.85rem;
+    color: #333;
+}
+
+.btn-user-profile {
+    border: 1px solid #e0e0e0;
+    border-radius: 30px;
+    padding: 4px 12px 4px 4px;
+    background-color: #fff;
+}
+
+    .btn-user-profile:hover {
+        background-color: #f8f9fa;
+    }
+
+
+.footer-unah {
+    background-color: var(--unah-navy);
+}
+
+.footer-links a {
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+    .footer-links a:hover {
+        color: #ffffff;
+        text-decoration: underline;
+    }
+
+.social-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-decoration: none;
+    transition: background 0.2s ease;
+}
+
+.social-icon:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+    color: white;
+}
