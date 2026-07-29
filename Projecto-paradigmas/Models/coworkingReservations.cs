@@ -10,7 +10,7 @@ namespace Projecto_paradigmas.Models
 
         public int Participants { get; set; }
 
-        public int ReservedBy { get; set; }
+        public long ReservedBy { get; set; }
 
         public DateTime Start { get; set; }
 

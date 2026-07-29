@@ -35,7 +35,7 @@ namespace Paradigmas_MVC.servicios
             }
         }
 
-        public double ObtenerHorasReservadasHoy(int idUsuario, DateTime fecha)
+        public double ObtenerHorasReservadasHoy(long idUsuario, DateTime fecha)
         {
             using (SqlConnection cn = new SqlConnection(cadenaConexion))
             {
@@ -69,6 +69,28 @@ namespace Paradigmas_MVC.servicios
                                (@AreaId, @ReservedBy, @Participants, @Start, @End, @Status, @AcademicPurpose)";
 
                 cn.Execute(sql, reserva);
+            }
+        }
+
+        public List<CoworkingAreas> ListarAreas()
+        {
+            List<CoworkingAreas> lista = new List<CoworkingAreas>();
+            using (SqlConnection cn = new SqlConnection(cadenaConexion))
+            {
+                cn.Open();
+                string sql = "SELECT * FROM CoworkingAreas";
+                lista = cn.Query<CoworkingAreas>(sql).ToList();
+            }
+            return lista;
+        }
+
+        public CoworkingAreas ObtenerAreaPorId(int id)
+        {
+            using (SqlConnection cn = new SqlConnection(cadenaConexion))
+            {
+                cn.Open();
+                string sql = "SELECT * FROM CoworkingAreas WHERE Id = @Id";
+                return cn.QueryFirstOrDefault<CoworkingAreas>(sql, new { Id = id })!;
             }
         }
     }
