@@ -1,0 +1,330 @@
+@model IEnumerable<Projecto_paradigmas.Models.coworkingReservations>
+
+@{
+    ViewData["Title"] = "Gestión de Reservas - Co-Working";
+    Layout = null; // Ajusta según la estructura de tu proyecto
+    var areas = ViewData["Areas"] as IEnumerable<Projecto_paradigmas.Models.CoworkingAreas>;
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - UNAH</title>
+    <!-- Bootstrap 5 CSS & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+            :root {
+                --primary-navy: #1b2a4a;
+                --primary-navy-hover: #142038;
+                --accent-blue: #0d6efd;
+                --bg-light: #f8f9fa;
+                --border-color: #e2e8f0;
+                --text-dark: #2d3748;
+                --text-muted: #718096;
+            }
+
+            body {
+                font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+                background-color: var(--bg-light);
+                color: var(--text-dark);
+                margin: 0;
+                padding: 0;
+            }
+
+            .top-navbar {
+                background-color: var(--primary-navy);
+                height: 60px;
+                padding: 0 1.5rem;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                color: #ffffff;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+
+            .brand-logo {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                font-weight: 700;
+                font-size: 1.1rem;
+                color: #ffffff;
+                text-decoration: none;
+            }
+
+            .btn-reserve {
+                background-color: #ffffff;
+                color: var(--primary-navy);
+                font-weight: 600;
+                padding: 6px 16px;
+                border-radius: 6px;
+                border: none;
+                transition: all 0.2s ease;
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+            }
+
+                .btn-reserve:hover {
+                    background-color: #e2e8f0;
+                    color: var(--primary-navy-hover);
+                }
+
+            .metric-card {
+                background: #ffffff;
+                border: 1px solid var(--border-color);
+                border-radius: 10px;
+                padding: 1.25rem;
+                height: 100%;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            }
+
+            .metric-title {
+                color: var(--text-muted);
+                font-size: 0.85rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                margin-bottom: 0.5rem;
+            }
+
+            .metric-value {
+                font-size: 1.75rem;
+                font-weight: 700;
+                margin-bottom: 0;
+                line-height: 1;
+            }
+
+            .content-card {
+                background: #ffffff;
+                border: 1px solid var(--border-color);
+                border-radius: 10px;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+                overflow: hidden;
+            }
+
+            .table-custom th {
+                background-color: #f1f5f9;
+                color: #475569;
+                font-weight: 600;
+                font-size: 0.85rem;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                border-bottom: 1px solid var(--border-color);
+                padding: 12px 16px;
+            }
+
+            .table-custom td {
+                padding: 14px 16px;
+                vertical-align: middle;
+                border-bottom: 1px solid #f1f5f9;
+                font-size: 0.9rem;
+            }
+
+            .badge-status {
+                padding: 6px 12px;
+                border-radius: 20px;
+                font-weight: 600;
+                font-size: 0.75rem;
+                display: inline-block;
+            }
+
+            .badge-pendiente {
+                background-color: #dbeafe;
+                color: #1e40af;
+            }
+
+            .badge-proceso {
+                background-color: #d1fae5;
+                color: #065f46;
+            }
+
+            .badge-finalizada {
+                background-color: #f3f4f6;
+                color: #374151;
+            }
+
+            .badge-cancelada {
+                background-color: #fee2e2;
+                color: #991b1b;
+            }
+
+            .action-btn {
+                border-radius: 6px;
+                font-size: 0.8rem;
+                font-weight: 600;
+                padding: 5px 10px;
+            }
+    </style>
+</head>
+<body>
+
+    <!-- Header / Navbar -->
+    <header class="top-navbar">
+        <a href="/ReservaCoworking/Index" class="brand-logo">
+            <i class="bi bi-speedometer2"></i>
+            <span>Reserva de Co-Working <small style="font-size: 0.75rem; font-weight: normal; opacity: 0.8;">UNAH</small></span>
+        </a>
+        <a href="/ReservaCoworking/Create" class="btn-reserve text-decoration-none">
+            <i class="bi bi-calendar-plus"></i> Nueva Reserva
+        </a>
+    </header>
+
+    <main class="container-fluid py-4 px-4">
+
+        <!-- Métricas Rápidas -->
+        <div class="row g-3 mb-4">
+            <div class="col-12 col-sm-6 col-lg-3">
+                <div class="metric-card">
+                    <div class="metric-title">Pendientes</div>
+                    <div class="metric-value text-primary">
+                        @(Model != null ? Model.Count(r => r.Status == "Pendiente") : 0)
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-3">
+                <div class="metric-card">
+                    <div class="metric-title">En Proceso</div>
+                    <div class="metric-value text-success">
+                        @(Model != null ? Model.Count(r => r.Status == "En Proceso") : 0)
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-3">
+                <div class="metric-card">
+                    <div class="metric-title">Finalizadas</div>
+                    <div class="metric-value text-secondary">
+                        @(Model != null ? Model.Count(r => r.Status == "Finalizada") : 0)
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-3">
+                <div class="metric-card">
+                    <div class="metric-title">Canceladas</div>
+                    <div class="metric-value text-danger">
+                        @(Model != null ? Model.Count(r => r.Status == "Cancelada") : 0)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla Principal de Reservas -->
+        <div class="content-card">
+            <div class="p-3 border-bottom d-flex flex-wrap justify-content-between align-items-center gap-3">
+                <h6 class="mb-0 fw-bold text-navy">Gestión de Reservaciones de Co-Working</h6>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-custom align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>ID Reserva</th>
+                            <th>Área ID</th>
+                            <th>Reservado Por (ID)</th>
+                            <th>Participantes</th>
+                            <th>Inicio</th>
+                            <th>Fin</th>
+                            <th>Estado</th>
+                            <th class="text-end">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="fw-bold">#@item.ReservationId</td>
+                                    <td>
+                                        @{
+                                            var areaName = areas?.FirstOrDefault(a => a.Id == item.AreaId)?.Name;
+                                        }
+                                        <span class="fw-semibold">@(areaName ?? $"Área #{item.AreaId}")</span>
+                                    </td>
+                                    <td>@item.ReservedBy</td>
+                                    <td>
+                                        <i class="bi bi-people me-1 text-muted"></i>@item.Participants
+                                    </td>
+                                    <td>@item.Start.ToString("g")</td>
+                                    <td>@item.End.ToString("g")</td>
+                                    <td>
+                                        @{
+                                            string badgeClass = item.Status switch
+                                            {
+                                                "Pendiente" => "badge-pendiente",
+                                                "En Proceso" => "badge-proceso",
+                                                "Finalizada" => "badge-finalizada",
+                                                "Cancelada" => "badge-cancelada",
+                                                _ => "bg-secondary text-white"
+                                            };
+                                        }
+                                        <span class="badge-status @badgeClass">@item.Status</span>
+                                    </td>
+                                    <td class="text-end">
+                                        @if (item.Status == "Pendiente")
+                                        {
+                                            <form asp-action="ChangeStatus" method="post" class="d-inline">
+                                                <input type="hidden" name="id" value="@item.ReservationId" />
+                                                <input type="hidden" name="status" value="En Proceso" />
+                                                <button type="submit" class="btn btn-sm btn-success action-btn me-1">
+                                                    <i class="bi bi-box-arrow-in-right"></i> Check-in
+                                                </button>
+                                            </form>
+                                            <form asp-action="ChangeStatus" method="post" class="d-inline">
+                                                <input type="hidden" name="id" value="@item.ReservationId" />
+                                                <input type="hidden" name="status" value="Cancelada" />
+                                                <button type="submit" class="btn btn-sm btn-outline-danger action-btn">
+                                                    <i class="bi bi-x-circle"></i> Cancelar
+                                                </button>
+                                            </form>
+                                        }
+                                        else if (item.Status == "En Proceso")
+                                        {
+                                            <form asp-action="ChangeStatus" method="post" class="d-inline">
+                                                <input type="hidden" name="id" value="@item.ReservationId" />
+                                                <input type="hidden" name="status" value="Finalizada" />
+                                                <button type="submit" class="btn btn-sm btn-primary action-btn me-1">
+                                                    <i class="bi bi-box-arrow-right"></i> Check-out
+                                                </button>
+                                            </form>
+                                            <form asp-action="ChangeStatus" method="post" class="d-inline">
+                                                <input type="hidden" name="id" value="@item.ReservationId" />
+                                                <input type="hidden" name="status" value="Cancelada" />
+                                                <button type="submit" class="btn btn-sm btn-outline-danger action-btn">
+                                                    <i class="bi bi-x-circle"></i> Cancelar
+                                                </button>
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted small">Sin acciones</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="8" class="text-center py-4 text-muted">
+                                    <i class="bi bi-inbox fs-3 d-block mb-1"></i>
+                                    No hay reservas registradas en el sistema.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
