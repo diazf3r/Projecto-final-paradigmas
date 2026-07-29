@@ -11,8 +11,7 @@ namespace Projecto_paradigmas.Controllers
         // GET: ReservaCoworking
         public ActionResult Index()
         {
-            var reservations = _service.ListarReservasPorUsuario(1);
-
+            var reservations = _service.ListarReservasPorUsuario(20192001399);
             return View(reservations);
         }
 
@@ -25,14 +24,20 @@ namespace Projecto_paradigmas.Controllers
         // GET: ReservaCoworking/Create
         public ActionResult Create()
         {
+            var areas = _service.ListarAreas();
+            ViewBag.Areas = areas; // Para llenar el dropdown en la vista
             return View();
         }
 
         // POST: ReservaCoworking/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(coworkingReservations reserva)
+        public ActionResult Create(CoworkingReservationViewModel reserva)
         {
+            if (!ModelState.IsValid)
+            {
+                return View();
+            }
             reserva.ReservedBy = 20192001399; // ID/Cuenta en sesión
 
             CoworkingAreas areaSeleccionada = _service.ObtenerAreaPorId(reserva.AreaId);
@@ -85,34 +90,57 @@ namespace Projecto_paradigmas.Controllers
             return RedirectToAction("Index");
         }
 
-        // GET: ReservaCoworking/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
         // POST: ReservaCoworking/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult CheckIn(int id)
         {
+            if (!ModelState.IsValid)
+            {
+                return RedirectToAction(nameof(Index));
+            }
             try
             {
+                _service.CheckInReserva(id);
                 return RedirectToAction(nameof(Index));
             }
             catch
             {
-                return View();
+                return RedirectToAction(nameof(Index));
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult CheckOut(int id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+            try
+            {
+                _service.CheckOutReserva(id);
+                return RedirectToAction(nameof(Index));
+            }
+            catch
+            {
+                return RedirectToAction(nameof(Index));
             }
         }
 
         // POST: ReservaCoworking/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult Delete(int id)
         {
+            if (!ModelState.IsValid)
+            {
+                return View();
+            }
             try
             {
+                _service.CancelarReserva(id);
                 return RedirectToAction(nameof(Index));
             }
             catch
