@@ -1,9 +1,11 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Projecto_paradigmas.Models;
 using System.Diagnostics;
 
 namespace Projecto_paradigmas.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
         public IActionResult Index()

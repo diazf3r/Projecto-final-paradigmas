@@ -1,0 +1,138 @@
+﻿@{
+    ViewData["Title"] = "Iniciar Sesión";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Servicios al Estudiante - UNAH</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="~/css/styles.css" asp-append-version="true" />
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="nav-brand">
+            <div class="logo-placeholder"><i class="bi bi-book-half"></i></div>
+            <div class="brand-text">
+                <span class="brand-title">UNAH</span>
+                <span class="brand-sub">DIRECCIÓN DE INGRESO PERMANENCIA Y PROMOCIÓN</span>
+            </div>
+        </div>
+        <div class="nav-actions">
+            <a href="/Register" class="btn-primary-nav">Crear expediente</a>
+            <span class="unah-mini-logo"><i class="bi bi-shield-shaded"></i> UNAH</span>
+            <button class="theme-toggle" aria-label="Cambiar tema"><i class="bi bi-moon"></i></button>
+        </div>
+    </header>
+    <main class="main-container">
+        <div class="login-card">
+            <div class="card-left">
+                <div class="hat-icon-circle">
+                    <i class="bi bi-mortarboard-fill"></i>
+                </div>
+                <h2>UNAH</h2>
+                <p class="sub-heading">DIRECCIÓN DE INGRESO PERMANENCIA Y PROMOCIÓN</p>
+
+                <div class="hashtag-badge">#UNAHNuevaHistoria</div>
+
+                <h3>Escribe tu historia.<br>Empieza <span>hoy.</span></h3>
+                <p class="footer-left-text">
+                    Portal estudiantil oficial de la Universidad Nacional Autónoma de Honduras.
+                </p>
+            </div>
+
+            <div class="card-right">
+                <div class="portal-badge">PORTAL ESTUDIANTIL</div>
+                <h1>Servicios al Estudiante</h1>
+                <p class="form-instruction">Ingresa sus credenciales para acceder a los servicios estudiantiles</p>
+
+                <form class="login-form" asp-controller="Account" asp-action="Login" method="POST">
+                    <div class="form-group">
+                        <label for="numeroCuenta">Número de Cuenta</label>
+                        <div class="input-icon-wrapper">
+                            <i class="bi bi-person"></i>
+                            <input type="text" id="Id" name="Id" placeholder="20192001399" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Contraseña</label>
+                        <div class="input-icon-wrapper">
+                            <i class="bi bi-lock"></i>
+                            <input type="password" id="password" name="password" placeholder="••••••••" required>
+                            <i class="bi bi-eye toggle-password" id="togglePassword"></i>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-submit">Ingresar</button>
+
+                    <div class="register-action-wrapper">
+                        <span>¿No tienes cuenta?</span>
+                        <a asp-controller="Account" asp-action="Register" class="btn-register">Registrarse</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <section class="bottom-action-section">
+            <h2>¿Aún no tienes tu número de cuenta y contraseña?</h2>
+            <p>Crea tu expediente estudiantil para acceder a todos los servicios</p>
+
+            <a href="/Register" class="btn-orange">Crear Expediente Estudiantil</a>
+
+            <p class="support-text">
+                ¿Necesitas ayuda? Escríbenos a <a href="mailto:soportematriculadipp@unah.edu.hn">soportematriculadipp@unah.edu.hn</a>
+            </p>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-col">
+                <div class="footer-brand">
+                    <i class="bi bi-book-half"></i>
+                    <span>UNAH • DIPP</span>
+                </div>
+                <p>Dirección de Ingreso, Permanencia y Promoción — Universidad Nacional Autónoma de Honduras.</p>
+                <div class="social-icons">
+                    <a href="#"><i class="bi bi-facebook"></i></a>
+                    <a href="#"><i class="bi bi-envelope"></i></a>
+                </div>
+            </div>
+
+            <div class="footer-col">
+                <h4>ACCESOS RÁPIDOS</h4>
+                <ul>
+                    <li><a href="#">Sistema de pregrado</a></li>
+                    <li><a href="#">Sistema de posgrado</a></li>
+                    <li><a href="#">Campus Virtual</a></li>
+                    <li><a href="#">Administración DIPP</a></li>
+                    <li><a href="#">Políticas de privacidad</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>CONTACTO</h4>
+                <p><i class="bi bi-geo-alt"></i> Ciudad Universitaria<br>&nbsp;&nbsp;&nbsp;&nbsp;Tegucigalpa, M.D.C. Honduras</p>
+                <p><i class="bi bi-telephone"></i> ASESORÍA Y ATENCIÓN<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="mailto:soportematriculadipp@unah.edu.hn">soportematriculadipp@unah.edu.hn</a><br>&nbsp;&nbsp;&nbsp;&nbsp;2216-3002</p>
+                <p><i class="bi bi-envelope"></i> CALIFICACIONES<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="mailto:calificacionesdipp@unah.edu.hn">calificacionesdipp@unah.edu.hn</a></p>
+                <p><i class="bi bi-archive"></i> ARCHIVO<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="mailto:archivo.cu5@unah.edu.hn">archivo.cu5@unah.edu.hn</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+            const togglePassword = document.querySelector('#togglePassword');
+            const password = document.querySelector('#password');
+
+            togglePassword.addEventListener('click', function() {
+                const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+                password.setAttribute('type', type);
+                this.classList.toggle('bi-eye');
+                this.classList.toggle('bi-eye-slash');
+            });
+    </script>
+</body>
+</html>

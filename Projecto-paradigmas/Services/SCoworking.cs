@@ -5,7 +5,7 @@ namespace Paradigmas_MVC.servicios
 {
     public class SCoworking
     {
-        string cadenaConexion = "workstation id=Paradigmas2026_Om4r.mssql.somee.com;packet size=4096;user id=DiazOm4r_SQLLogin_1;pwd=snb7ac454l;data source=Paradigmas2026_Om4r.mssql.somee.com;persist security info=False;initial catalog=Paradigmas2026_Om4r;TrustServerCertificate=True";
+        readonly string cadenaConexion = "workstation id=Paradigmas2026_Om4r.mssql.somee.com;packet size=4096;user id=DiazOm4r_SQLLogin_1;pwd=snb7ac454l;data source=Paradigmas2026_Om4r.mssql.somee.com;persist security info=False;initial catalog=Paradigmas2026_Om4r;TrustServerCertificate=True";
 
         public List<coworkingReservations> ListarReservasPorUsuario(long idUsuario)
         {

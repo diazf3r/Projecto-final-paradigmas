@@ -4,9 +4,8 @@ namespace Projecto_paradigmas.Models
 {
     public class LoginViewModel
     {
-        [Required(ErrorMessage = "El correo electrónico es obligatorio.")]
-        [EmailAddress(ErrorMessage = "Ingresa un correo electrónico válido.")]
-        public string Correo { get; set; } = string.Empty;
+        [Required(ErrorMessage = "El número de cuenta es obligatorio.")]
+        public long Id { get; set; }
 
         [Required(ErrorMessage = "La contraseña es obligatoria.")]
         [DataType(DataType.Password)]

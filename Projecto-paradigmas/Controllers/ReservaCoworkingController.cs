@@ -1,17 +1,21 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Paradigmas_MVC.servicios;
 using Projecto_paradigmas.Models;
+using System.Security.Claims;
 
 namespace Projecto_paradigmas.Controllers
 {
+    [Authorize]
     public class ReservaCoworkingController : Controller
     {
         SCoworking _service = new SCoworking();
         // GET: ReservaCoworking
         public ActionResult Index()
         {
-            var reservations = _service.ListarReservasPorUsuario(20192001399);
+            var userId = User.HasClaim(c => c.Type == ClaimTypes.NameIdentifier) ? long.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value) : 0;
+            var reservations = _service.ListarReservasPorUsuario(userId);
             return View(reservations);
         }
 
@@ -34,11 +38,11 @@ namespace Projecto_paradigmas.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(CoworkingReservationViewModel reserva)
         {
+            reserva.ReservedBy = User.HasClaim(c => c.Type == ClaimTypes.NameIdentifier) ? long.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value) : 0;
             if (!ModelState.IsValid)
             {
                 return View();
             }
-            reserva.ReservedBy = 20192001399; // ID/Cuenta en sesión
 
             CoworkingAreas areaSeleccionada = _service.ObtenerAreaPorId(reserva.AreaId);
 
