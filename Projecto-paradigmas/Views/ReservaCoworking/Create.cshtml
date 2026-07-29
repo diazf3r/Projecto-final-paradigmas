@@ -1,0 +1,228 @@
+﻿@model Projecto_paradigmas.Models.coworkingReservations
+
+@{
+    ViewData["Title"] = "Nueva Reserva de Co-Working";
+    Layout = null; // Ajusta según la plantilla principal de tu proyecto
+    var areas = ViewData["Areas"] as IEnumerable<Projecto_paradigmas.Models.CoworkingAreas>;
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - UNAH</title>
+    <!-- Bootstrap 5 CSS & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-navy: #1b2a4a;
+            --primary-navy-hover: #142038;
+            --bg-light: #f8f9fa;
+            --border-color: #e2e8f0;
+            --text-dark: #2d3748;
+        }
+
+        body {
+            font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            margin: 0;
+            padding: 0;
+        }
+
+        .top-navbar {
+            background-color: var(--primary-navy);
+            height: 60px;
+            padding: 0 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #ffffff;
+            text-decoration: none;
+        }
+
+        .form-card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .form-header {
+            background-color: var(--primary-navy);
+            color: #ffffff;
+            padding: 1.25rem 1.5rem;
+        }
+
+        .btn-navy {
+            background-color: var(--primary-navy);
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        .btn-navy:hover {
+            background-color: var(--primary-navy-hover);
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header / Barra Superior -->
+    <header class="top-navbar mb-4">
+        <a href="/ReservaCoworking/Index" class="brand-logo">
+            <i class="bi bi-speedometer2"></i>
+            <span>Reserva de Co-Working <small style="font-size: 0.75rem; font-weight: normal; opacity: 0.8;">UNAH</small></span>
+        </a>
+    </header>
+
+    <main class="container py-4" style="max-width: 720px;">
+
+        <!-- Tarjeta del Formulario -->
+        <div class="form-card">
+            <div class="form-header d-flex align-items-center justify-content-between">
+                <h5 class="mb-0 fw-bold">
+                    <i class="bi bi-calendar-plus me-2"></i>Nueva Reserva de Área
+                </h5>
+                <a href="/ReservaCoworking/Index" class="btn btn-sm btn-outline-light">
+                    <i class="bi bi-arrow-left me-1"></i> Volver a la lista
+                </a>
+            </div>
+
+            <form asp-action="Create" method="post" id="formCreateReserva" onsubmit="return validateForm(event)">
+                <div class="p-4">
+                    <!-- Contenedor para Errores de Validación -->
+                    <div id="errorAlert" class="alert alert-danger d-none py-2 mb-3" role="alert"></div>
+
+                    <div class="row">
+                        <!-- Selección de Área de Coworking -->
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="AreaId" class="form-label fw-semibold">Área de Co-Working</label>
+                            <select asp-for="AreaId" class="form-select" id="inputAreaId" required>
+                                <option value="">-- Seleccione un Área --</option>
+                                @if (areas != null)
+                                {
+                                    foreach (var area in areas)
+                                    {
+                                        <option value="@area.Id">
+                                            @area.Name (Piso @area.Floor - Min: @area.MinParticipants / Máx: @area.MaxParticipants)
+                                        </option>
+                                    }
+                                }
+                            </select>
+                            <span asp-validation-for="AreaId" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Número de Identificación (ReservedBy - long) -->
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="ReservedBy" class="form-label fw-semibold">N° Identificación / Cuenta</label>
+                            <input asp-for="ReservedBy" type="number" class="form-control" id="inputReservedBy" placeholder="Ej: 0801199912345" required />
+                            <span asp-validation-for="ReservedBy" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Participants" class="form-label fw-semibold">Cantidad de Participantes</label>
+                        <input asp-for="Participants" type="number" min="1" class="form-control" id="inputParticipants" placeholder="Ej: 5" required />
+                        <span asp-validation-for="Participants" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Horarios (Start y End) -->
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Start" class="form-label fw-semibold">Fecha y Hora de Inicio</label>
+                            <input asp-for="Start" type="datetime-local" class="form-control" id="inputStart" required />
+                            <span asp-validation-for="Start" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="End" class="form-label fw-semibold">Fecha y Hora de Fin</label>
+                            <input asp-for="End" type="datetime-local" class="form-control" id="inputEnd" required />
+                            <span asp-validation-for="End" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <!-- Estado Inicial oculto (por defecto "Pendiente") -->
+                    <input type="hidden" asp-for="Status" value="Pendiente" />
+                </div>
+
+                <div class="px-4 py-3 bg-light border-top d-flex justify-content-end gap-2">
+                    <a href="/ReservaCoworking/Index" class="btn btn-secondary text-white fw-bold">Cancelar</a>
+                    <button type="submit" class="btn btn-navy">
+                        <i class="bi bi-check-circle me-1"></i> Confirmar Reserva
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Establecer fechas por defecto si no han sido seleccionadas
+            const startInput = document.getElementById('inputStart');
+            const endInput = document.getElementById('inputEnd');
+
+            if (!startInput.value) {
+                const now = new Date();
+                now.setMinutes(0, 0, 0);
+                const later = new Date(now.getTime() + (2 * 60 * 60 * 1000));
+
+                startInput.value = formatDateTimeForInput(now);
+                endInput.value = formatDateTimeForInput(later);
+            }
+        });
+
+        function formatDateTimeForInput(dateObj) {
+            const pad = (num) => String(num).padStart(2, '0');
+            const year = dateObj.getFullYear();
+            const month = pad(dateObj.getMonth() + 1);
+            const day = pad(dateObj.getDate());
+            const hours = pad(dateObj.getHours());
+            const minutes = pad(dateObj.getMinutes());
+            return `${year}-${month}-${day}T${hours}:${minutes}`;
+        }
+
+        function validateForm(event) {
+            const errorAlert = document.getElementById('errorAlert');
+            errorAlert.classList.add('d-none');
+
+            const startVal = new Date(document.getElementById('inputStart').value);
+            const endVal = new Date(document.getElementById('inputEnd').value);
+            const participants = parseInt(document.getElementById('inputParticipants').value, 10);
+
+            if (startVal >= endVal) {
+                event.preventDefault();
+                errorAlert.innerText = 'La fecha y hora de finalización debe ser posterior a la de inicio.';
+                errorAlert.classList.remove('d-none');
+                return false;
+            }
+
+            if (participants <= 0) {
+                event.preventDefault();
+                errorAlert.innerText = 'El número de participantes debe ser mayor a 0.';
+                errorAlert.classList.remove('d-none');
+                return false;
+            }
+
+            return true;
+        }
+    </script>
+</body>
+</html>

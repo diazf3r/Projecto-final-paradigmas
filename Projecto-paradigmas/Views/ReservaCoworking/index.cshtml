@@ -1,6 +1,9 @@
+@model IEnumerable<Projecto_paradigmas.Models.coworkingReservations>
+
 @{
-    ViewData["Title"] = "Reserva de Espacio";
-    Layout = null; // Vista Razor independiente con maquetación exacta
+    ViewData["Title"] = "Gestión de Reservas - Co-Working";
+    Layout = null; // Ajusta según la estructura de tu proyecto
+    var areas = ViewData["Areas"] as IEnumerable<Projecto_paradigmas.Models.CoworkingAreas>;
 }
 
 <!DOCTYPE html>
@@ -9,7 +12,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - UNAH</title>
-    <!-- Bootstrap 5 CSS & FontAwesome / Bootstrap Icons -->
+    <!-- Bootstrap 5 CSS & Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,24 +23,21 @@
             :root {
                 --primary-navy: #1b2a4a;
                 --primary-navy-hover: #142038;
-                --accent-teal: #17a2b8;
+                --accent-blue: #0d6efd;
                 --bg-light: #f8f9fa;
                 --border-color: #e2e8f0;
                 --text-dark: #2d3748;
                 --text-muted: #718096;
-                --active-tab-bg: #eef2f7;
             }
 
             body {
                 font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-                background-color: #ffffff;
+                background-color: var(--bg-light);
                 color: var(--text-dark);
                 margin: 0;
                 padding: 0;
-                overflow-x: hidden;
             }
 
-            /* Header / Navbar Superior */
             .top-navbar {
                 background-color: var(--primary-navy);
                 height: 60px;
@@ -47,11 +47,6 @@
                 justify-content: space-between;
                 color: #ffffff;
                 box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                z-index: 1030;
             }
 
             .brand-logo {
@@ -64,534 +59,272 @@
                 text-decoration: none;
             }
 
-                .brand-logo i {
-                    font-size: 1.5rem;
-                }
-
-            /* Layout Principal */
-            .app-container {
-                display: flex;
-                margin-top: 60px;
-                min-height: calc(100vh - 60px);
-            }
-
-            /* Área de Contenido */
-            .main-content {
-                flex-grow: 1;
-                padding: 2rem 2.5rem;
-                background-color: #ffffff;
-            }
-
-            .content-header {
-                margin-bottom: 1.5rem;
-            }
-
-            .content-title {
-                font-size: 1.4rem;
-                font-weight: 700;
-                color: var(--primary-navy);
-                margin-bottom: 1.2rem;
-            }
-
-            /* Toolbar y Controles */
-            .toolbar-container {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                flex-wrap: wrap;
-                gap: 1rem;
-                margin-bottom: 2.5rem;
-            }
-
-            .category-tabs {
-                display: flex;
-                gap: 0.5rem;
-                flex-wrap: wrap;
-            }
-
-            .tab-btn {
-                border: 1px solid #cbd5e1;
-                background-color: #ffffff;
-                color: #0284c7;
-                padding: 0.4rem 0.9rem;
-                border-radius: 6px;
-                font-size: 0.85rem;
-                font-weight: 500;
-                cursor: pointer;
-                transition: all 0.2s;
-            }
-
-                .tab-btn:hover {
-                    background-color: #f1f5f9;
-                }
-
-                .tab-btn.active {
-                    background-color: var(--primary-navy);
-                    color: #ffffff;
-                    border-color: var(--primary-navy);
-                }
-
-            .filter-controls {
-                display: flex;
-                align-items: center;
-                gap: 0.75rem;
-                flex-wrap: wrap;
-            }
-
-            /* Botón Sustituido */
             .btn-reserve {
-                background-color: var(--primary-navy);
-                color: #ffffff;
-                border: none;
-                padding: 0.45rem 1.1rem;
-                border-radius: 6px;
-                font-size: 0.875rem;
+                background-color: #ffffff;
+                color: var(--primary-navy);
                 font-weight: 600;
-                cursor: pointer;
-                transition: background-color 0.2s;
+                padding: 6px 16px;
+                border-radius: 6px;
+                border: none;
+                transition: all 0.2s ease;
                 display: inline-flex;
                 align-items: center;
                 gap: 6px;
             }
 
                 .btn-reserve:hover {
-                    background-color: var(--primary-navy-hover);
-                    color: #ffffff;
+                    background-color: #e2e8f0;
+                    color: var(--primary-navy-hover);
                 }
 
-            /* Estado Vacío (Sin Resultados) */
-            .empty-state {
-                text-align: center;
-                padding: 6rem 1rem;
-            }
-
-            .empty-state-title {
-                font-size: 1.25rem;
-                font-weight: 700;
-                color: #3b82f6;
-                margin-bottom: 0.75rem;
-            }
-
-            .empty-state-desc {
-                color: #64748b;
-                font-size: 0.95rem;
-            }
-
-            /* Tarjeta de Actividad */
-            .activity-card {
+            .metric-card {
+                background: #ffffff;
                 border: 1px solid var(--border-color);
                 border-radius: 10px;
-                padding: 1.25rem 1.5rem;
-                margin-bottom: 1rem;
-                box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-                transition: transform 0.2s, box-shadow 0.2s;
-                background-color: #ffffff;
+                padding: 1.25rem;
+                height: 100%;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.02);
             }
 
-                .activity-card:hover {
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-                }
-
-            .activity-badge {
-                font-size: 0.75rem;
-                padding: 0.25rem 0.6rem;
-                border-radius: 50px;
+            .metric-title {
+                color: var(--text-muted);
+                font-size: 0.85rem;
                 font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                margin-bottom: 0.5rem;
             }
 
-            .badge-pending {
-                background-color: #fef3c7;
-                color: #d97706;
+            .metric-value {
+                font-size: 1.75rem;
+                font-weight: 700;
+                margin-bottom: 0;
+                line-height: 1;
             }
 
-            .badge-checkedin {
-                background-color: #d1fae5;
-                color: #059669;
+            .content-card {
+                background: #ffffff;
+                border: 1px solid var(--border-color);
+                border-radius: 10px;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+                overflow: hidden;
             }
 
-            .badge-checkedout {
-                background-color: #e2e8f0;
+            .table-custom th {
+                background-color: #f1f5f9;
                 color: #475569;
+                font-weight: 600;
+                font-size: 0.85rem;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                border-bottom: 1px solid var(--border-color);
+                padding: 12px 16px;
             }
 
-            .badge-canceled {
+            .table-custom td {
+                padding: 14px 16px;
+                vertical-align: middle;
+                border-bottom: 1px solid #f1f5f9;
+                font-size: 0.9rem;
+            }
+
+            .badge-status {
+                padding: 6px 12px;
+                border-radius: 20px;
+                font-weight: 600;
+                font-size: 0.75rem;
+                display: inline-block;
+            }
+
+            .badge-pendiente {
+                background-color: #dbeafe;
+                color: #1e40af;
+            }
+
+            .badge-proceso {
+                background-color: #d1fae5;
+                color: #065f46;
+            }
+
+            .badge-finalizada {
+                background-color: #f3f4f6;
+                color: #374151;
+            }
+
+            .badge-cancelada {
                 background-color: #fee2e2;
-                color: #dc2626;
+                color: #991b1b;
             }
 
             .action-btn {
-                font-size: 0.825rem;
-                padding: 0.4rem 0.85rem;
                 border-radius: 6px;
+                font-size: 0.8rem;
                 font-weight: 600;
-                transition: all 0.2s;
+                padding: 5px 10px;
             }
     </style>
 </head>
 <body>
 
-    <!-- Header / Barra Superior -->
+    <!-- Header / Navbar -->
     <header class="top-navbar">
-        <a href="#" class="brand-logo">
+        <a href="/ReservaCoworking/Index" class="brand-logo">
             <i class="bi bi-speedometer2"></i>
-            <span>Reserva de Espacio <small style="font-size: 0.75rem; font-weight: normal; opacity: 0.8;">UNAH</small></span>
+            <span>Reserva de Co-Working <small style="font-size: 0.75rem; font-weight: normal; opacity: 0.8;">UNAH</small></span>
+        </a>
+        <a href="/ReservaCoworking/Create" class="btn-reserve text-decoration-none">
+            <i class="bi bi-calendar-plus"></i> Nueva Reserva
         </a>
     </header>
 
-    <!-- Contenedor Principal -->
-    <div class="app-container">
-        <!-- Contenido Central -->
-        <main class="main-content">
-            <div class="content-header">
-                <h1 class="content-title">Espacios reservados</h1>
-            </div>
+    <main class="container-fluid py-4 px-4">
 
-            <!-- Contenedor de Alertas Dinámicas -->
-            <div id="alertContainer"></div>
-
-            <!-- Barra de Herramientas y Filtros -->
-            <div class="toolbar-container">
-                <div class="category-tabs">
-                    <button class="tab-btn active" type="button">Inscritas</button>
-                </div>
-
-                <div class="filter-controls">
-                    <!-- Botón Sustituido: "Reservar espacio" -->
-                    <button id="btnReservar" class="btn-reserve" onclick="openReservationModal()">
-                        <i class="bi bi-calendar-plus"></i> Reservar espacio
-                    </button>
-                </div>
-            </div>
-
-            <!-- Contenedor Dinámico de Actividades -->
-            <div id="activityContainer">
-                <!-- Estado Vacío Inicial -->
-                <div id="emptyState" class="empty-state">
-                    <h3 class="empty-state-title">Sin resultados</h3>
-                    <p class="empty-state-desc">No hay elementos para mostrar en este momento.</p>
-                </div>
-
-                <!-- Lista donde se renderizan las reservaciones -->
-                <div id="activityList" class="row"></div>
-            </div>
-        </main>
-    </div>
-
-    <!-- Modal Formulario de Reserva con Inputs de DateTime -->
-    <div class="modal fade" id="modalReservarEspacio" tabindex="-1" aria-labelledby="modalReservarEspacioLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg" style="border-radius: 12px;">
-                <div class="modal-header text-white" style="background-color: var(--primary-navy); border-top-left-radius: 12px; border-top-right-radius: 12px;">
-                    <h5 class="modal-title fw-bold" id="modalReservarEspacioLabel">
-                        <i class="bi bi-calendar-check me-2"></i>Reservar Espacio para Actividad
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form id="formReserva" onsubmit="handleReservaSubmit(event)">
-                    <div class="modal-body p-4">
-                        <div id="modalErrorAlert" class="alert alert-danger d-none py-2" role="alert"></div>
-
-                        <div class="mb-3">
-                            <label for="inputEspacio" class="form-label fw-semibold">Espacio / Aula / Laboratorio</label>
-                            <input type="text" class="form-control" id="inputEspacio" placeholder="Ej: Laboratorio 1, Edificio B2" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="inputActividad" class="form-label fw-semibold">Nombre de la Actividad</label>
-                            <input type="text" class="form-control" id="inputActividad" placeholder="Ej: Taller de Desarrollo con ASP.NET Core" required>
-                        </div>
-
-                        <!-- Manejo con DateTime (datetime-local) -->
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="inputDateTimeInicio" class="form-label fw-semibold">Fecha y Hora de Inicio (DateTime)</label>
-                                <input type="datetime-local" class="form-control" id="inputDateTimeInicio" required>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="inputDateTimeFin" class="form-label fw-semibold">Fecha y Hora de Fin (DateTime)</label>
-                                <input type="datetime-local" class="form-control" id="inputDateTimeFin" required>
-                            </div>
-                        </div>
+        <!-- Métricas Rápidas -->
+        <div class="row g-3 mb-4">
+            <div class="col-12 col-sm-6 col-lg-3">
+                <div class="metric-card">
+                    <div class="metric-title">Pendientes</div>
+                    <div class="metric-value text-primary">
+                        @(Model != null ? Model.Count(r => r.Status == "Pendiente") : 0)
                     </div>
-                    <div class="modal-footer bg-light border-0" style="border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
-                        <button type="button" class="btn btn-secondary text-white font-weight-bold" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn text-white fw-semibold" style="background-color: var(--primary-navy);">
-                            <i class="bi bi-check-circle me-1"></i> Confirmar Reserva
-                        </button>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-3">
+                <div class="metric-card">
+                    <div class="metric-title">En Proceso</div>
+                    <div class="metric-value text-success">
+                        @(Model != null ? Model.Count(r => r.Status == "En Proceso") : 0)
                     </div>
-                </form>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-3">
+                <div class="metric-card">
+                    <div class="metric-title">Finalizadas</div>
+                    <div class="metric-value text-secondary">
+                        @(Model != null ? Model.Count(r => r.Status == "Finalizada") : 0)
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-3">
+                <div class="metric-card">
+                    <div class="metric-title">Canceladas</div>
+                    <div class="metric-value text-danger">
+                        @(Model != null ? Model.Count(r => r.Status == "Cancelada") : 0)
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Scripts de Interacción JS con lógica DateTime -->
+        <!-- Tabla Principal de Reservas -->
+        <div class="content-card">
+            <div class="p-3 border-bottom d-flex flex-wrap justify-content-between align-items-center gap-3">
+                <h6 class="mb-0 fw-bold text-navy">Gestión de Reservaciones de Co-Working</h6>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-custom align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>ID Reserva</th>
+                            <th>Área ID</th>
+                            <th>Reservado Por (ID)</th>
+                            <th>Participantes</th>
+                            <th>Inicio</th>
+                            <th>Fin</th>
+                            <th>Estado</th>
+                            <th class="text-end">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="fw-bold">#@item.ReservationId</td>
+                                    <td>
+                                        @{
+                                            var areaName = areas?.FirstOrDefault(a => a.Id == item.AreaId)?.Name;
+                                        }
+                                        <span class="fw-semibold">@(areaName ?? $"Área #{item.AreaId}")</span>
+                                    </td>
+                                    <td>@item.ReservedBy</td>
+                                    <td>
+                                        <i class="bi bi-people me-1 text-muted"></i>@item.Participants
+                                    </td>
+                                    <td>@item.Start.ToString("g")</td>
+                                    <td>@item.End.ToString("g")</td>
+                                    <td>
+                                        @{
+                                            string badgeClass = item.Status switch
+                                            {
+                                                "Pendiente" => "badge-pendiente",
+                                                "En Proceso" => "badge-proceso",
+                                                "Finalizada" => "badge-finalizada",
+                                                "Cancelada" => "badge-cancelada",
+                                                _ => "bg-secondary text-white"
+                                            };
+                                        }
+                                        <span class="badge-status @badgeClass">@item.Status</span>
+                                    </td>
+                                    <td class="text-end">
+                                        @if (item.Status == "Pendiente")
+                                        {
+                                            <form asp-action="ChangeStatus" method="post" class="d-inline">
+                                                <input type="hidden" name="id" value="@item.ReservationId" />
+                                                <input type="hidden" name="status" value="En Proceso" />
+                                                <button type="submit" class="btn btn-sm btn-success action-btn me-1">
+                                                    <i class="bi bi-box-arrow-in-right"></i> Check-in
+                                                </button>
+                                            </form>
+                                            <form asp-action="ChangeStatus" method="post" class="d-inline">
+                                                <input type="hidden" name="id" value="@item.ReservationId" />
+                                                <input type="hidden" name="status" value="Cancelada" />
+                                                <button type="submit" class="btn btn-sm btn-outline-danger action-btn">
+                                                    <i class="bi bi-x-circle"></i> Cancelar
+                                                </button>
+                                            </form>
+                                        }
+                                        else if (item.Status == "En Proceso")
+                                        {
+                                            <form asp-action="ChangeStatus" method="post" class="d-inline">
+                                                <input type="hidden" name="id" value="@item.ReservationId" />
+                                                <input type="hidden" name="status" value="Finalizada" />
+                                                <button type="submit" class="btn btn-sm btn-primary action-btn me-1">
+                                                    <i class="bi bi-box-arrow-right"></i> Check-out
+                                                </button>
+                                            </form>
+                                            <form asp-action="ChangeStatus" method="post" class="d-inline">
+                                                <input type="hidden" name="id" value="@item.ReservationId" />
+                                                <input type="hidden" name="status" value="Cancelada" />
+                                                <button type="submit" class="btn btn-sm btn-outline-danger action-btn">
+                                                    <i class="bi bi-x-circle"></i> Cancelar
+                                                </button>
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted small">Sin acciones</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="8" class="text-center py-4 text-muted">
+                                    <i class="bi bi-inbox fs-3 d-block mb-1"></i>
+                                    No hay reservas registradas en el sistema.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-            // Arreglo en memoria para almacenar las actividades
-            let activities = [];
-            let reservationModal;
-
-            document.addEventListener('DOMContentLoaded', () => {
-                reservationModal = new bootstrap.Modal(document.getElementById('modalReservarEspacio'));
-
-                // Establecer fecha/hora por defecto en los inputs datetime-local
-                const now = new Date();
-                now.setMinutes(0, 0, 0); // Redondear a la hora actual
-
-                const later = new Date(now.getTime() + (2 * 60 * 60 * 1000)); // +2 Horas
-
-                document.getElementById('inputDateTimeInicio').value = formatDateTimeForInput(now);
-                document.getElementById('inputDateTimeFin').value = formatDateTimeForInput(later);
-            });
-
-            // Formateador de Date a string yyyy-MM-ddThh:mm para input datetime-local
-            function formatDateTimeForInput(dateObj) {
-                const pad = (num) => String(num).padStart(2, '0');
-                const year = dateObj.getFullYear();
-                const month = pad(dateObj.getMonth() + 1);
-                const day = pad(dateObj.getDate());
-                const hours = pad(dateObj.getHours());
-                const minutes = pad(dateObj.getMinutes());
-                return `${year}-${month}-${day}T${hours}:${minutes}`;
-            }
-
-            // Formateadores para visualización estética de DateTime
-            function formatDateTimeToDateString(dateObj) {
-                return dateObj.toLocaleDateString('es-ES', {
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit'
-                });
-            }
-
-            function formatDateTimeToTimeString(dateObj) {
-                return dateObj.toLocaleTimeString('es-ES', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    hour12: true
-                });
-            }
-
-            // REGLA DE NEGOCIO: Prevenir más de una reservación de espacio activa
-            function openReservationModal() {
-                const hasActiveReservation = activities.some(a => a.status === 'Pendiente' || a.status === 'En Desarrollo');
-
-                if (hasActiveReservation) {
-                    showAlert('Ya posees una reservación de espacio activa. Debes finalizarla (Check-out) o cancelarla para poder realizar otra.', 'warning');
-                    return;
-                }
-
-                document.getElementById('modalErrorAlert').classList.add('d-none');
-                reservationModal.show();
-            }
-
-            // Manejar el submit del formulario con objetos DateTime
-            function handleReservaSubmit(event) {
-                event.preventDefault();
-
-                // Validar restricción de 1 reserva activa
-                const hasActiveReservation = activities.some(a => a.status === 'Pendiente' || a.status === 'En Desarrollo');
-                if (hasActiveReservation) {
-                    const modalError = document.getElementById('modalErrorAlert');
-                    modalError.innerText = 'No está permitido tener más de una reserva activa simultáneamente.';
-                    modalError.classList.remove('d-none');
-                    return;
-                }
-
-                const espacio = document.getElementById('inputEspacio').value;
-                const actividad = document.getElementById('inputActividad').value;
-
-                // Instanciar objetos Date (DateTime)
-                const dateTimeInicioVal = document.getElementById('inputDateTimeInicio').value;
-                const dateTimeFinVal = document.getElementById('inputDateTimeFin').value;
-
-                const startDateTime = new Date(dateTimeInicioVal);
-                const endDateTime = new Date(dateTimeFinVal);
-
-                // Validar comparaciones de DateTime
-                if (startDateTime >= endDateTime) {
-                    const modalError = document.getElementById('modalErrorAlert');
-                    modalError.innerText = 'La fecha y hora de fin debe ser posterior a la fecha y hora de inicio.';
-                    modalError.classList.remove('d-none');
-                    return;
-                }
-
-                const newActivity = {
-                    id: Date.now(),
-                    espacio: espacio,
-                    actividad: actividad,
-                    startDateTime: startDateTime, // Objeto DateTime de inicio
-                    endDateTime: endDateTime,     // Objeto DateTime de fin
-                    status: 'Pendiente',          // Estados: Pendiente, En Desarrollo (Check-in), Finalizado (Check-out), Cancelada
-                    checkInDateTime: null,         // DateTime de Check-in
-                    checkOutDateTime: null         // DateTime de Check-out
-                };
-
-                activities.unshift(newActivity);
-
-                // Limpiar formulario y cerrar modal
-                document.getElementById('formReserva').reset();
-                const now = new Date();
-                now.setMinutes(0, 0, 0);
-                const later = new Date(now.getTime() + (2 * 60 * 60 * 1000));
-                document.getElementById('inputDateTimeInicio').value = formatDateTimeForInput(now);
-                document.getElementById('inputDateTimeFin').value = formatDateTimeForInput(later);
-
-                reservationModal.hide();
-
-                showAlert('Reservación de espacio creada exitosamente mediante asignación DateTime.', 'success');
-                renderActivities();
-            }
-
-            // Renderizar tarjeta de actividad procesando objetos DateTime
-            function renderActivities() {
-                const emptyState = document.getElementById('emptyState');
-                const activityList = document.getElementById('activityList');
-
-                if (activities.length === 0) {
-                    emptyState.style.display = 'block';
-                    activityList.innerHTML = '';
-                    return;
-                }
-
-                emptyState.style.display = 'none';
-                activityList.innerHTML = '';
-
-                activities.forEach(act => {
-                    let badgeClass = 'badge-pending';
-                    let statusText = 'Reservada (Pendiente)';
-
-                    if (act.status === 'En Desarrollo') {
-                        badgeClass = 'badge-checkedin';
-                        statusText = 'En Desarrollo (Check-in)';
-                    } else if (act.status === 'Finalizado') {
-                        badgeClass = 'badge-checkedout';
-                        statusText = 'Finalizada (Check-out)';
-                    } else if (act.status === 'Cancelada') {
-                        badgeClass = 'badge-canceled';
-                        statusText = 'Reserva Cancelada';
-                    }
-
-                    // Formatear DateTime para visualización
-                    const fechaStr = formatDateTimeToDateString(act.startDateTime);
-                    const horaInicioStr = formatDateTimeToTimeString(act.startDateTime);
-                    const horaFinStr = formatDateTimeToTimeString(act.endDateTime);
-
-                    const cardCol = document.createElement('div');
-                    cardCol.className = 'col-12';
-                    cardCol.innerHTML = `
-                                <div class="activity-card">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <div>
-                                            <span class="activity-badge ${badgeClass} mb-2 d-inline-block">
-                                                <i class="bi bi-circle-fill me-1" style="font-size: 0.5rem;"></i>${statusText}
-                                            </span>
-                                            <h5 class="fw-bold mb-1 text-dark" style="font-size: 1.1rem;">${escapeHtml(act.actividad)}</h5>
-                                            <p class="text-muted mb-2" style="font-size: 0.88rem;">
-                                                <i class="bi bi-geo-alt-fill text-danger me-1"></i><strong>Espacio:</strong> ${escapeHtml(act.espacio)}
-                                            </p>
-                                        </div>
-                                        <div class="text-end">
-                                            <span class="badge bg-light text-dark border px-3 py-2" style="font-size: 0.82rem;">
-                                                <i class="bi bi-calendar3 me-1 text-primary"></i> ${fechaStr}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <div class="row align-items-center pt-2 border-top mt-2">
-                                        <div class="col-md-5 mb-2 mb-md-0">
-                                            <span class="text-muted me-3" style="font-size: 0.85rem;">
-                                                <i class="bi bi-clock me-1 text-primary"></i> Horario: <strong>${horaInicioStr} - ${horaFinStr}</strong>
-                                            </span>
-                                            ${act.checkInDateTime ? `<span class="badge bg-success-subtle text-success border border-success-subtle me-1" style="font-size: 0.75rem;"><i class="bi bi-box-arrow-in-right"></i> In: ${formatDateTimeToTimeString(act.checkInDateTime)}</span>` : ''}
-                                            ${act.checkOutDateTime ? `<span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle" style="font-size: 0.75rem;"><i class="bi bi-box-arrow-right"></i> Out: ${formatDateTimeToTimeString(act.checkOutDateTime)}</span>` : ''}
-                                        </div>
-
-                                        <!-- Botones requeridos: Check-in, Check-out y Cancelar Reserva -->
-                                        <div class="col-md-7 text-md-end d-flex justify-content-md-end gap-2">
-                                            <button type="button"
-                                                    class="btn btn-outline-success action-btn"
-                                                    onclick="handleCheckIn(${act.id})"
-                                                    ${act.status !== 'Pendiente' ? 'disabled' : ''}>
-                                                <i class="bi bi-box-arrow-in-right me-1"></i> Check in
-                                            </button>
-
-                                            <button type="button"
-                                                    class="btn btn-outline-primary action-btn"
-                                                    onclick="handleCheckOut(${act.id})"
-                                                    ${act.status !== 'En Desarrollo' ? 'disabled' : ''}>
-                                                <i class="bi bi-box-arrow-right me-1"></i> Check out
-                                            </button>
-
-                                            <button type="button"
-                                                    class="btn btn-outline-danger action-btn"
-                                                    onclick="handleCancelarReserva(${act.id})"
-                                                    ${(act.status === 'Finalizado' || act.status === 'Cancelada') ? 'disabled' : ''}>
-                                                <i class="bi bi-x-circle me-1"></i> Cancelar reserva
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            `;
-                    activityList.appendChild(cardCol);
-                });
-            }
-
-            // Control de Estado 1: Check-in (Guarda DateTime actual)
-            function handleCheckIn(id) {
-                const item = activities.find(a => a.id === id);
-                if (item && item.status === 'Pendiente') {
-                    item.status = 'En Desarrollo';
-                    item.checkInDateTime = new Date(); // Asignación de DateTime del Check-in
-                    showAlert(`Check-in registrado exitosamente a las ${formatDateTimeToTimeString(item.checkInDateTime)}.`, 'info');
-                    renderActivities();
-                }
-            }
-
-            // Control de Estado 2: Check-out (Guarda DateTime actual)
-            function handleCheckOut(id) {
-                const item = activities.find(a => a.id === id);
-                if (item && item.status === 'En Desarrollo') {
-                    item.status = 'Finalizado';
-                    item.checkOutDateTime = new Date(); // Asignación de DateTime del Check-out
-                    showAlert(`Check-out registrado exitosamente a las ${formatDateTimeToTimeString(item.checkOutDateTime)}. Espacio liberado.`, 'success');
-                    renderActivities();
-                }
-            }
-
-            // Control de Estado 3: Cancelar Reserva
-            function handleCancelarReserva(id) {
-                if (confirm('¿Deseas cancelar esta reservación de espacio?')) {
-                    const item = activities.find(a => a.id === id);
-                    if (item) {
-                        item.status = 'Cancelada';
-                        showAlert('La reserva de espacio fue cancelada con éxito.', 'danger');
-                        renderActivities();
-                    }
-                }
-            }
-
-            // Helper para Alertas de UI
-            function showAlert(message, type) {
-                const alertContainer = document.getElementById('alertContainer');
-                alertContainer.innerHTML = `
-                            <div class="alert alert-${type} alert-dismissible fade show shadow-sm" role="alert">
-                                <i class="bi bi-clock-history me-2"></i> ${message}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
-                        `;
-                setTimeout(() => {
-                    const alertEl = alertContainer.querySelector('.alert');
-                    if (alertEl) {
-                        const bsAlert = new bootstrap.Alert(alertEl);
-                        bsAlert.close();
-                    }
-                }, 4500);
-            }
-
-            // Sanitización XSS
-            function escapeHtml(str) {
-                return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-            }
-    </script>
 </body>
 </html>
