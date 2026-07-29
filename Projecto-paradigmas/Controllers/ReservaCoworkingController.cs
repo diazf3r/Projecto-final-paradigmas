@@ -97,7 +97,7 @@ namespace Projecto_paradigmas.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View(); 
+                return RedirectToAction(nameof(Index));
             }
             try
             {
@@ -106,7 +106,7 @@ namespace Projecto_paradigmas.Controllers
             }
             catch
             {
-                return View();
+                return RedirectToAction(nameof(Index));
             }
         }
 
@@ -116,7 +116,7 @@ namespace Projecto_paradigmas.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View();
+                return RedirectToAction(nameof(Index));
             }
             try
             {
@@ -125,7 +125,7 @@ namespace Projecto_paradigmas.Controllers
             }
             catch
             {
-                return View();
+                return RedirectToAction(nameof(Index));
             }
         }
 

@@ -4,7 +4,7 @@ namespace Projecto_paradigmas.Models
 {
     public class coworkingReservations
     {
-        public int ReservationId { get; set; }
+        public int Id { get; set; }
 
         public int AreaId { get; set; }
 

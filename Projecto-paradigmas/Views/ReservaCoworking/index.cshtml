@@ -240,7 +240,6 @@
                                 // Permite hacer check-in 15 minutos antes de la hora acordada
                                 bool puedeHacerCheckIn = DateTime.Now >= item.Start.AddMinutes(-15) && DateTime.Now <= item.End;
                                 <tr>
-                                    <td hidden="hidden">@item.ReservationId</td>
                                     <td>
                                         <span class="fw-semibold">@item.name</span>
                                     </td>
@@ -268,7 +267,7 @@
                                             @if (puedeHacerCheckIn)
                                             {
                                                 <form asp-action="CheckIn" method="post" class="d-inline">
-                                                    <input type="hidden" name="id" value="@item.ReservationId" />
+                                                    <input type="hidden" name="id" value="@item.Id" />
                                                     <input type="hidden" name="status" value="En Proceso" />
                                                     <button type="submit" class="btn btn-sm btn-success action-btn me-1">
                                                         <i class="bi bi-box-arrow-in-right"></i> Check-in
@@ -278,7 +277,7 @@
                                             else
                                             {
                                                 <form asp-action="CheckIn" method="post" class="d-inline">
-                                                    <input type="hidden" name="id" value="@item.ReservationId" />
+                                                    <input type="hidden" name="id" value="@item.Id" />
                                                     <input type="hidden" name="status" value="En Proceso" />
                                                     <button type="submit" disabled class="btn btn-sm btn-success action-btn me-1">
                                                         <i class="bi bi-box-arrow-in-right"></i> Check-in
@@ -286,27 +285,20 @@
                                                 </form>
                                             }
                                             <form asp-action="Delete" method="post" class="d-inline">
-                                                <input type="hidden" name="id" value="@item.ReservationId" />
+                                                <input type="hidden" name="id" value="@item.Id" />
                                                 <input type="hidden" name="status" value="Cancelada" />
                                                 <button type="submit" class="btn btn-sm btn-outline-danger action-btn">
                                                     <i class="bi bi-x-circle"></i> Cancelar
                                                 </button>
                                             </form>
                                         }
-                                        else if (item.Status == "En Proceso")
+                                        else if (item.Status == "En proceso")
                                         {
                                             <form asp-action="CheckOut" method="post" class="d-inline">
-                                                <input type="hidden" name="id" value="@item.ReservationId" />
+                                                <input type="hidden" name="id" value="@item.Id" />
                                                 <input type="hidden" name="status" value="Finalizada" />
                                                 <button type="submit" class="btn btn-sm btn-primary action-btn me-1">
                                                     <i class="bi bi-box-arrow-right"></i> Check-out
-                                                </button>
-                                            </form>
-                                            <form asp-action="Delete" method="post" class="d-inline">
-                                                <input type="hidden" name="id" value="@item.ReservationId" />
-                                                <input type="hidden" name="status" value="Cancelada" />
-                                                <button type="submit" class="btn btn-sm btn-outline-danger action-btn">
-                                                    <i class="bi bi-x-circle"></i> Cancelar
                                                 </button>
                                             </form>
                                         }
