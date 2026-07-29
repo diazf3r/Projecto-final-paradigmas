@@ -22,9 +22,8 @@
             </div>
         </div>
         <div class="nav-actions">
-            <a href="/Register" class="btn-primary-nav">Crear expediente</a>
+            <a asp-controller="Account" asp-action="Register" class="btn-primary-nav">Crear expediente</a>
             <span class="unah-mini-logo"><i class="bi bi-shield-shaded"></i> UNAH</span>
-            <button class="theme-toggle" aria-label="Cambiar tema"><i class="bi bi-moon"></i></button>
         </div>
     </header>
     <main class="main-container">
@@ -81,7 +80,7 @@
             <h2>¿Aún no tienes tu número de cuenta y contraseña?</h2>
             <p>Crea tu expediente estudiantil para acceder a todos los servicios</p>
 
-            <a href="/Register" class="btn-orange">Crear Expediente Estudiantil</a>
+            <a asp-controller="Account" asp-action="Register" class="btn-orange">Crear Expediente Estudiantil</a>
 
             <p class="support-text">
                 ¿Necesitas ayuda? Escríbenos a <a href="mailto:soportematriculadipp@unah.edu.hn">soportematriculadipp@unah.edu.hn</a>

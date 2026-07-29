@@ -165,13 +165,13 @@
 
                         <div class="col-md-6 mb-3">
                             <label asp-for="HoraInicio" class="form-label fw-semibold">Hora de Inicio</label>
-                            <input asp-for="HoraInicio" id="inputStart" type="time" class="form-control" min="07:00" max="17:00" />
+                            <input asp-for="HoraInicio" id="inputStart" type="time" class="form-control" min="07:00" max="19:00" />
                             <span asp-validation-for="HoraInicio" class="text-danger small"></span>
                         </div>
 
                         <div class="col-md-6 mb-3">
                             <label asp-for="HoraFin" class="form-label fw-semibold">Hora de Fin</label>
-                            <input asp-for="HoraFin" id="inputEnd" type="time" class="form-control" min="07:00" max="19:00" />
+                            <input asp-for="HoraFin" id="inputEnd" type="time" class="form-control" min="08:00" max="21:00" />
                             <span asp-validation-for="HoraFin" class="text-danger small"></span>
                         </div>
                     </div>
@@ -199,7 +199,7 @@
                 const errorEnd = document.getElementById('errorEnd');
 
                 const HORA_MIN = "07:00";
-                const HORA_MAX = "19:00";
+                const HORA_MAX = "21:00";
 
                 const ahora = new Date();
 
@@ -228,7 +228,7 @@
 
                     if (input.value < HORA_MIN || input.value > HORA_MAX) {
                         if (errorSpan) {
-                            errorSpan.textContent = "La hora debe estar entre las 07:00 AM y las 07:00 PM.";
+                            errorSpan.textContent = "La hora debe estar entre las 07:00 AM y las 09:00 PM.";
                         }
                         input.value = "";
                     } else {

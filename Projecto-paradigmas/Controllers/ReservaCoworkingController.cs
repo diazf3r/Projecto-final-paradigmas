@@ -62,11 +62,11 @@ namespace Projecto_paradigmas.Controllers
             }
 
             TimeSpan horaApertura = new TimeSpan(7, 0, 0);
-            TimeSpan horaCierre = new TimeSpan(19, 0, 0);
+            TimeSpan horaCierre = new TimeSpan(21, 0, 0);
 
             if (reserva.Start.TimeOfDay < horaApertura || reserva.End.TimeOfDay > horaCierre)
             {
-                ViewBag.Error = "El área de coworking solo está disponible entre las 7:00 a.m. y las 7:00 p.m.";
+                ViewBag.Error = "El área de coworking solo está disponible entre las 7:00 a.m. y las 9:00 p.m.";
                 ViewBag.Areas = _service.ListarAreas();
                 return View(reserva);
             }
