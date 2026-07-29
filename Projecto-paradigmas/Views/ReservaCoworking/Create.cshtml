@@ -1,9 +1,9 @@
-﻿@model Projecto_paradigmas.Models.coworkingReservations
+﻿@model Projecto_paradigmas.Models.CoworkingReservationViewModel
 
 @{
     ViewData["Title"] = "Nueva Reserva de Co-Working";
-    Layout = null; // Ajusta según la plantilla principal de tu proyecto
-    var areas = ViewData["Areas"] as IEnumerable<Projecto_paradigmas.Models.CoworkingAreas>;
+    Layout = null;
+}
 }
 
 <!DOCTYPE html>
@@ -108,23 +108,30 @@
 
             <form asp-action="Create" method="post" id="formCreateReserva" onsubmit="return validateForm(event)">
                 <div class="p-4">
-                    <!-- Contenedor para Errores de Validación -->
-                    <div id="errorAlert" class="alert alert-danger d-none py-2 mb-3" role="alert"></div>
+                    @if (ViewBag.Error != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            @ViewBag.Error
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    <div id="errorAlert" class="alert alert-danger alert-dismissible fade show d-none" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        <span id="errorAlertText"></span>
+                    </div>
 
                     <div class="row">
-                        <!-- Selección de Área de Coworking -->
                         <div class="col-md-6 mb-3">
                             <label asp-for="AreaId" class="form-label fw-semibold">Área de Co-Working</label>
                             <select asp-for="AreaId" class="form-select" id="inputAreaId" required>
                                 <option value="">-- Seleccione un Área --</option>
-                                @if (areas != null)
+                                @foreach (var area in ViewBag.Areas)
                                 {
-                                    foreach (var area in areas)
-                                    {
-                                        <option value="@area.Id">
-                                            @area.Name (Piso @area.Floor - Min: @area.MinParticipants / Máx: @area.MaxParticipants)
-                                        </option>
-                                    }
+                                    <option value="@area.Id">
+                                        @area.Name (Piso @area.Floor - Min: @area.MinParticipants / Máx: @area.MaxParticipants)
+                                    </option>
                                 }
                             </select>
                             <span asp-validation-for="AreaId" class="text-danger small"></span>
@@ -144,21 +151,32 @@
                         <span asp-validation-for="Participants" class="text-danger small"></span>
                     </div>
 
-                    <!-- Horarios (Start y End) -->
+                    <div class="mb-3">
+                        <label asp-for="AcademicPurpose" class="form-label fw-semibold">Propósito Académico</label>
+                        <input asp-for="AcademicPurpose" type="text" class="form-control" id="inputAcademicPurpose" placeholder="Ej: Investigación" required />
+                        <span asp-validation-for="AcademicPurpose" class="text-danger small"></span>
+                    </div>
+
                     <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label asp-for="Start" class="form-label fw-semibold">Fecha y Hora de Inicio</label>
-                            <input asp-for="Start" type="datetime-local" class="form-control" id="inputStart" required />
-                            <span asp-validation-for="Start" class="text-danger small"></span>
+                        <div class="col-md-12 mb-3">
+                            <label asp-for="Fecha" class="form-label fw-semibold">Fecha de la Reserva</label>
+                            <input asp-for="Fecha" type="date" class="form-control" />
+                            <span asp-validation-for="Fecha" class="text-danger small"></span>
                         </div>
+
                         <div class="col-md-6 mb-3">
-                            <label asp-for="End" class="form-label fw-semibold">Fecha y Hora de Fin</label>
-                            <input asp-for="End" type="datetime-local" class="form-control" id="inputEnd" required />
-                            <span asp-validation-for="End" class="text-danger small"></span>
+                            <label asp-for="HoraInicio" class="form-label fw-semibold">Hora de Inicio</label>
+                            <input asp-for="HoraInicio" id="inputStart" type="time" class="form-control" min="07:00" max="17:00" />
+                            <span asp-validation-for="HoraInicio" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="HoraFin" class="form-label fw-semibold">Hora de Fin</label>
+                            <input asp-for="HoraFin" id="inputEnd" type="time" class="form-control" min="07:00" max="19:00" />
+                            <span asp-validation-for="HoraFin" class="text-danger small"></span>
                         </div>
                     </div>
 
-                    <!-- Estado Inicial oculto (por defecto "Pendiente") -->
                     <input type="hidden" asp-for="Status" value="Pendiente" />
                 </div>
 
@@ -174,55 +192,97 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Establecer fechas por defecto si no han sido seleccionadas
-            const startInput = document.getElementById('inputStart');
-            const endInput = document.getElementById('inputEnd');
+            document.addEventListener('DOMContentLoaded', () => {
+                const dateInput = document.getElementById('inputDate');
+                const startTimeInput = document.getElementById('inputStartTime');
+                const endTimeInput = document.getElementById('inputEndTime');
+                const errorStart = document.getElementById('errorStart');
+                const errorEnd = document.getElementById('errorEnd');
 
-            if (!startInput.value) {
-                const now = new Date();
-                now.setMinutes(0, 0, 0);
-                const later = new Date(now.getTime() + (2 * 60 * 60 * 1000));
+                const HORA_MIN = "07:00";
+                const HORA_MAX = "19:00";
 
-                startInput.value = formatDateTimeForInput(now);
-                endInput.value = formatDateTimeForInput(later);
+                const ahora = new Date();
+
+                if (!dateInput.value) {
+                    dateInput.value = formatDateForInput(ahora);
+                }
+
+                if (!startTimeInput.value) {
+                    // Hora actual redondeada o 07:00 si es muy temprano
+                    let horaActual = ahora.getHours();
+                    if (horaActual < 7) horaActual = 7;
+                    if (horaActual >= 19) horaActual = 17;
+
+                    const pad = (num) => String(num).padStart(2, '0');
+                    startTimeInput.value = `${pad(horaActual)}:00`;
+
+                    // Hora fin por defecto: +2 horas
+                    let horaFin = horaActual + 2;
+                    if (horaFin > 19) horaFin = 19;
+                    endTimeInput.value = `${pad(horaFin)}:00`;
+                }
+
+                // 2. Validar rango de horario (07:00 AM - 07:00 PM)
+                function validarRangoHora(input, errorSpan) {
+                    if (!input.value) return;
+
+                    if (input.value < HORA_MIN || input.value > HORA_MAX) {
+                        if (errorSpan) {
+                            errorSpan.textContent = "La hora debe estar entre las 07:00 AM y las 07:00 PM.";
+                        }
+                        input.value = "";
+                    } else {
+                        if (errorSpan) {
+                            errorSpan.textContent = "";
+                        }
+                    }
+                }
+
+                startTimeInput.addEventListener("change", function() {
+                    validarRangoHora(startTimeInput, errorStart);
+                });
+
+                endTimeInput.addEventListener("change", function() {
+                    validarRangoHora(endTimeInput, errorEnd);
+                });
+            });
+
+            // Formateador de fecha únicamente (yyyy-MM-dd)
+            function formatDateForInput(dateObj) {
+                const pad = (num) => String(num).padStart(2, '0');
+                const year = dateObj.getFullYear();
+                const month = pad(dateObj.getMonth() + 1);
+                const day = pad(dateObj.getDate());
+                return `${year}-${month}-${day}`;
             }
-        });
 
-        function formatDateTimeForInput(dateObj) {
-            const pad = (num) => String(num).padStart(2, '0');
-            const year = dateObj.getFullYear();
-            const month = pad(dateObj.getMonth() + 1);
-            const day = pad(dateObj.getDate());
-            const hours = pad(dateObj.getHours());
-            const minutes = pad(dateObj.getMinutes());
-            return `${year}-${month}-${day}T${hours}:${minutes}`;
-        }
+            function validateForm(event) {
+                const errorAlert = document.getElementById('errorAlert');
+                errorAlert.classList.add('d-none');
 
-        function validateForm(event) {
-            const errorAlert = document.getElementById('errorAlert');
-            errorAlert.classList.add('d-none');
+                const startTime = document.getElementById('inputStartTime').value;
+                const endTime = document.getElementById('inputEndTime').value;
+                const participantsInput = document.getElementById('inputParticipants');
+                const participants = participantsInput ? parseInt(participantsInput.value, 10) : 1;
 
-            const startVal = new Date(document.getElementById('inputStart').value);
-            const endVal = new Date(document.getElementById('inputEnd').value);
-            const participants = parseInt(document.getElementById('inputParticipants').value, 10);
+                // Comparación directa de cadenas HH:mm
+                if (startTime >= endTime) {
+                    event.preventDefault();
+                    errorAlert.innerText = 'La hora de finalización debe ser posterior a la hora de inicio.';
+                    errorAlert.classList.remove('d-none');
+                    return false;
+                }
 
-            if (startVal >= endVal) {
-                event.preventDefault();
-                errorAlert.innerText = 'La fecha y hora de finalización debe ser posterior a la de inicio.';
-                errorAlert.classList.remove('d-none');
-                return false;
+                if (participants <= 0) {
+                    event.preventDefault();
+                    errorAlert.innerText = 'El número de participantes debe ser mayor a 0.';
+                    errorAlert.classList.remove('d-none');
+                    return false;
+                }
+
+                return true;
             }
-
-            if (participants <= 0) {
-                event.preventDefault();
-                errorAlert.innerText = 'El número de participantes debe ser mayor a 0.';
-                errorAlert.classList.remove('d-none');
-                return false;
-            }
-
-            return true;
-        }
     </script>
 </body>
 </html>

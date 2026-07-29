@@ -7,13 +7,13 @@ namespace Paradigmas_MVC.servicios
     {
         string cadenaConexion = "workstation id=Paradigmas2026_Om4r.mssql.somee.com;packet size=4096;user id=DiazOm4r_SQLLogin_1;pwd=snb7ac454l;data source=Paradigmas2026_Om4r.mssql.somee.com;persist security info=False;initial catalog=Paradigmas2026_Om4r;TrustServerCertificate=True";
 
-        public List<coworkingReservations> ListarReservasPorUsuario(int idUsuario)
+        public List<coworkingReservations> ListarReservasPorUsuario(long idUsuario)
         {
             List<coworkingReservations> lista = new List<coworkingReservations>();
             using (SqlConnection cn = new SqlConnection(cadenaConexion))
             {
                 cn.Open();
-                string sql = "SELECT * FROM CoworkingReservation WHERE ReservedBy = @ReservedBy";
+                string sql = "SELECT cr.*, ca.name AS name FROM CoworkingReservation cr INNER JOIN CoworkingAreas ca ON cr.AreaId = ca.Id WHERE cr.ReservedBy = @ReservedBy";
                 lista = cn.Query<coworkingReservations>(sql, new { ReservedBy = idUsuario }).ToList();
             }
             return lista;
@@ -28,10 +28,40 @@ namespace Paradigmas_MVC.servicios
                                FROM CoworkingReservation 
                                WHERE AreaId = @AreaId 
                                  AND Status != 'Cancelada'
-                                 AND (@Inicio < End AND @Fin > Start)";
+                                 AND (@Inicio < [End] AND @Fin > [Start])";
 
                 int conteo = cn.ExecuteScalar<int>(sql, new { AreaId = areaId, Inicio = inicio, Fin = fin });
                 return conteo > 0;
+            }
+        }
+
+        public void CancelarReserva(int reservaId)
+        {
+            using (SqlConnection cn = new SqlConnection(cadenaConexion))
+            {
+                cn.Open();
+                string sql = "UPDATE CoworkingReservation SET Status = 'Cancelada' WHERE Id = @Id";
+                cn.Execute(sql, new { Id = reservaId });
+            }
+        }
+
+        public void CheckInReserva(int reservaId)
+        {
+            using (SqlConnection cn = new SqlConnection(cadenaConexion))
+            {
+                cn.Open();
+                string sql = "UPDATE CoworkingReservation SET Status = 'En proceso' WHERE Id = @Id";
+                cn.Execute(sql, new { Id = reservaId });
+            }
+        }
+
+        public void CheckOutReserva(int reservaId)
+        {
+            using (SqlConnection cn = new SqlConnection(cadenaConexion))
+            {
+                cn.Open();
+                string sql = "UPDATE CoworkingReservation SET Status = 'Finalizada' WHERE Id = @Id";
+                cn.Execute(sql, new { Id = reservaId });
             }
         }
 
@@ -44,7 +74,7 @@ namespace Paradigmas_MVC.servicios
                                FROM CoworkingReservation 
                                WHERE ReservedBy = @ReservedBy 
                                  AND Status != 'Cancelada'
-                                 AND CAST(Start AS DATE) = CAST(@Fecha AS DATE)";
+                                 AND CAST([Start] AS DATE) = CAST(@Fecha AS DATE)";
 
                 var reservasHoy = cn.Query<coworkingReservations>(sql, new { ReservedBy = idUsuario, Fecha = fecha }).ToList();
 
@@ -58,7 +88,7 @@ namespace Paradigmas_MVC.servicios
             }
         }
 
-        public void AgregarReserva(coworkingReservations reserva)
+        public void AgregarReserva(CoworkingReservationViewModel reserva)
         {
             using (SqlConnection cn = new SqlConnection(cadenaConexion))
             {
