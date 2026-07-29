@@ -2,8 +2,7 @@
 
 @{
     ViewData["Title"] = "Gestión de Reservas - Co-Working";
-    Layout = null; // Ajusta según la estructura de tu proyecto
-    var areas = ViewData["Areas"] as IEnumerable<Projecto_paradigmas.Models.CoworkingAreas>;
+    Layout = null;
 }
 
 <!DOCTYPE html>
@@ -225,9 +224,7 @@
                 <table class="table table-custom align-middle mb-0">
                     <thead>
                         <tr>
-                            <th>ID Reserva</th>
-                            <th>Área ID</th>
-                            <th>Reservado Por (ID)</th>
+                            <th>Área</th>
                             <th>Participantes</th>
                             <th>Inicio</th>
                             <th>Fin</th>
@@ -240,15 +237,13 @@
                         {
                             foreach (var item in Model)
                             {
+                                // Permite hacer check-in 15 minutos antes de la hora acordada
+                                bool puedeHacerCheckIn = DateTime.Now >= item.Start.AddMinutes(-15) && DateTime.Now <= item.End;
                                 <tr>
-                                    <td class="fw-bold">#@item.ReservationId</td>
+                                    <td hidden="hidden">@item.ReservationId</td>
                                     <td>
-                                        @{
-                                            var areaName = areas?.FirstOrDefault(a => a.Id == item.AreaId)?.Name;
-                                        }
-                                        <span class="fw-semibold">@(areaName ?? $"Área #{item.AreaId}")</span>
+                                        <span class="fw-semibold">@item.name</span>
                                     </td>
-                                    <td>@item.ReservedBy</td>
                                     <td>
                                         <i class="bi bi-people me-1 text-muted"></i>@item.Participants
                                     </td>
@@ -270,14 +265,27 @@
                                     <td class="text-end">
                                         @if (item.Status == "Pendiente")
                                         {
-                                            <form asp-action="ChangeStatus" method="post" class="d-inline">
-                                                <input type="hidden" name="id" value="@item.ReservationId" />
-                                                <input type="hidden" name="status" value="En Proceso" />
-                                                <button type="submit" class="btn btn-sm btn-success action-btn me-1">
-                                                    <i class="bi bi-box-arrow-in-right"></i> Check-in
-                                                </button>
-                                            </form>
-                                            <form asp-action="ChangeStatus" method="post" class="d-inline">
+                                            @if (puedeHacerCheckIn)
+                                            {
+                                                <form asp-action="CheckIn" method="post" class="d-inline">
+                                                    <input type="hidden" name="id" value="@item.ReservationId" />
+                                                    <input type="hidden" name="status" value="En Proceso" />
+                                                    <button type="submit" class="btn btn-sm btn-success action-btn me-1">
+                                                        <i class="bi bi-box-arrow-in-right"></i> Check-in
+                                                    </button>
+                                                </form>
+                                            }
+                                            else
+                                            {
+                                                <form asp-action="CheckIn" method="post" class="d-inline">
+                                                    <input type="hidden" name="id" value="@item.ReservationId" />
+                                                    <input type="hidden" name="status" value="En Proceso" />
+                                                    <button type="submit" disabled class="btn btn-sm btn-success action-btn me-1">
+                                                        <i class="bi bi-box-arrow-in-right"></i> Check-in
+                                                    </button>
+                                                </form>
+                                            }
+                                            <form asp-action="Delete" method="post" class="d-inline">
                                                 <input type="hidden" name="id" value="@item.ReservationId" />
                                                 <input type="hidden" name="status" value="Cancelada" />
                                                 <button type="submit" class="btn btn-sm btn-outline-danger action-btn">
@@ -287,14 +295,14 @@
                                         }
                                         else if (item.Status == "En Proceso")
                                         {
-                                            <form asp-action="ChangeStatus" method="post" class="d-inline">
+                                            <form asp-action="CheckOut" method="post" class="d-inline">
                                                 <input type="hidden" name="id" value="@item.ReservationId" />
                                                 <input type="hidden" name="status" value="Finalizada" />
                                                 <button type="submit" class="btn btn-sm btn-primary action-btn me-1">
                                                     <i class="bi bi-box-arrow-right"></i> Check-out
                                                 </button>
                                             </form>
-                                            <form asp-action="ChangeStatus" method="post" class="d-inline">
+                                            <form asp-action="Delete" method="post" class="d-inline">
                                                 <input type="hidden" name="id" value="@item.ReservationId" />
                                                 <input type="hidden" name="status" value="Cancelada" />
                                                 <button type="submit" class="btn btn-sm btn-outline-danger action-btn">
